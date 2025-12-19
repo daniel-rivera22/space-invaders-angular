@@ -1,0 +1,23 @@
+{    
+    "editor.formatOnPaste": true,
+    "git.autofetch": true,
+    "[markdown]":  {
+        "editor.wordWrap": "on"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "prettier.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "prettier.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "prettier.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "prettier.prettier-vscode"
+    },
+    "workbench.iconTheme": "material-icon-theme"
+}

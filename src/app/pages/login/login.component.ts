@@ -10,6 +10,6 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 export class Login {
   loginForm = new FormGroup({
     username: new FormControl('', Validators.required),
-    password: new FormControl(''),
+    password: new FormControl('', Validators.required),
   });
 }

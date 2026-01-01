@@ -1,5 +1,6 @@
 <form
   [formGroup]="registerForm"
+  (ngSubmit)="handleSubmit()"
   class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white"
 >
   <h3 class="text-warning">Register Form</h3>
@@ -13,7 +14,8 @@
       formControlName="username"
 
       class="form-control" 
-      placeholder="Username" />
+      placeholder="Username" 
+      required/>
   </div>
 
   <div class="mb-3">
@@ -26,7 +28,8 @@
       formControlName="email"
 
       class="form-control" 
-      placeholder="aaaaa@aaa.aaa" />
+      placeholder="aaaaa@aaa.aaa"
+      required/>
   </div>
 
   <div class="mb-3">
@@ -39,7 +42,8 @@
       formControlName="password"
 
       class="form-control" 
-      placeholder="Password" />
+      placeholder="Password"
+      required/>
   </div>
 
   <div class="mb-3">
@@ -53,7 +57,7 @@
 
       class="form-control"
       placeholder="Repeat your password"
-    />
+    required/>
   </div>
 
   <button type="submit" class="btn btn-primary w-100">Sign in</button>

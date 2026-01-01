@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 
-import { Home } from './pages/home/home';
-import { Preferences } from './pages/preferences/preferences';
-import { Game } from './pages/game/game';
-import { Records } from './pages/records/records';
+import { Home } from './pages/home/home.component';
+import { Preferences } from './pages/preferences/preferences.component';
+import { Game } from './pages/game/game.component';
+import { Records } from './pages/records/records.component';
 
-import { Register } from './pages/register/register';
-import { Login } from './pages/login/login';
-import { Logout } from './pages/logout/logout';
+import { Register } from './pages/register/register.component';
+import { Login } from './pages/login/login.component';
+import { Logout } from './pages/logout/logout.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },

@@ -1,45 +1,30 @@
-<form
-  [formGroup]="loginForm"
-  class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white"
->
-  <h3 class="text-warning">Register Form</h3>
-  <div class="mb-3">
-    <label for="username" class="form-label">Username:</label>
-    <input 
-      type="text" 
-      id="username" 
-      name="username" 
+        <form id="login-form" class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white">
+          <h3 class="text-warning">Login Form</h3>
+          <div class="mb-3">
+            <label for="username" class="form-label">User</label>
+            <input
+              type="text"
+              name="username"
+              id="username"
 
-      formControlName="username"
+              formControlName="username"
 
-      class="form-control" 
-      placeholder="Username" />
-  </div>
+              class="form-control"
+              placeholder="User" />
+          </div>
 
-  <div class="mb-3">
-    <label for="email" class="form-label">Email</label>
-    <input 
-      type="email" 
-      id="email" 
-      name="email" 
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="password"
 
-      formControlName="email"
+              formControlName="password"
 
-      class="form-control" 
-      placeholder="aaaaa@aaa.aaa" />
-  </div>
+              class="form-control"
+              placeholder="Password" />
+          </div>
 
-  <div class="mb-3">
-    <label for="password" class="form-label">Password</label>
-    <input 
-      type="password" 
-      id="password"
-      name="password"
-
-      formControlName="password"
-
-      class="form-control" 
-      placeholder="Password" />
-  </div>
-  <button type="submit" class="btn btn-primary w-100">Sign in</button>
-</form>
+          <button id="submit-login-button" type="button" class="btn btn-primary w-100">Log in</button>
+        </form>

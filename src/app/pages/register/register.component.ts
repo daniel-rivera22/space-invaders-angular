@@ -9,9 +9,9 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 })
 export class Register {
   registerForm = new FormGroup({
-    username: new FormControl(''),
-    email: new FormControl(''),
-    password: new FormControl(''),
-    confirmPassword: new FormControl(''),
+    username: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', Validators.required),
+    confirmPassword: new FormControl('', Validators.required),
   });
 }

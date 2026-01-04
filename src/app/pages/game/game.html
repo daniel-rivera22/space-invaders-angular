@@ -1,1 +1,19 @@
-<p>game works!</p>
+<div #gameContainer class="position-relative w-100 h-100 d-flex justify-content-center align-items-center bg-black">
+  
+  <canvas 
+    #gameCanvas
+    class="d-block game-canvas"
+    tabindex="0"
+    (keydown)="onKeyDown($event)"
+    (keyup)="onKeyUp($event)"
+  ></canvas>
+
+  <div class="position-absolute top-0 end-0 p-3 text-white">
+    <h4 class="m-0 fw-bold font-monospace">Tiempo: </h4>
+  </div>
+
+  <div class="position-absolute bottom-0 end-0 p-3 text-white">
+    <h3 class="m-0 fw-bold font-monospace">Score: </h3>
+  </div>
+
+</div>

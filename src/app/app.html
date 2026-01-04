@@ -1,11 +1,16 @@
-<header>
-  <app-navbar></app-navbar>
-</header>
+<div class="d-flex flex-column vh-100 overflow-hidden">
 
-<main>
-  <router-outlet></router-outlet>
-</main>
+  <header>
+    <app-navbar></app-navbar>
+  </header>
 
-<footer>
-  <app-footer></app-footer>
-</footer>
+  <main class="d-flex flex-column flex-grow-1 position-relative bg-black">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer>
+    <app-footer></app-footer>
+  </footer>
+
+</div>
+

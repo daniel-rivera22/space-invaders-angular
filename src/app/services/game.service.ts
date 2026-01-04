@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Ship, Ufo, Bullet, GAME_CONFIG } from '../models/game-models';
+import { Ship, Ufo, Bullet, GAME_CONFIG, Entity } from '../models/game-models';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class GameService {
     Sirve para no inicializar un objeto con datos falsos solo para satisfacer al compilador
   */
   private ship!: Ship;
-  private readonly UFOS: Ufo[] = [];
+  private UFOS: Ufo[] = [];
   private bullet: Bullet | null = null; // No existe Optional<> porque TS lo maneja así
 
   private readonly gameVariables = {
@@ -134,7 +134,7 @@ export class GameService {
     return Math.max(min, Math.min(value, max));
   }
 
-  // TODO: modificar función para implementar mentalidad de colmena
+  // TODO: modificar función para implementar "mentalidad de colmena" y eliminar "efecto muelle"
   private updateUfosCoords(): void {
     this.UFOS.forEach((ufo) => {
       if (ufo.x <= 0 || ufo.x + ufo.width >= this.width){
@@ -162,17 +162,64 @@ export class GameService {
   }
 
   private updateBulletCoords(): void {
-    /*
-      Si la bala se sale del canvas completamente, la "matamos" -> desvanecimiento progresivo
-      Queda mejor que aplicar el clamping a la bala también, así parece que se pierde en el espacio
-    */
-
     // Si no hay disparo, no hacer nada
     if (!this.bullet) return;
 
-    // Si el disparo se ha salido de la pantalla, eliminarlo
-    if (this.bullet.y + this.bullet.height <= 0) this.bullet = null;
+    // Comprobar si la bala se ha salido completamente del viewport -> implementa desvanecimiento en lugar de usar clamping
+    const bulletCompletelyOutOfViewport = this.bullet.y + this.bullet.height <= 0;
+    if(bulletCompletelyOutOfViewport){
+      this.bullet = null;
+      this.gameVariables.score += GAME_CONFIG.GAME_VARIABLES.SCORE_INCREMENT_PER_MISSED_BULLET;
+      return;
+    }
+
+    // Comprobar si la bala ha impactado en algún OVNI
+    /*
+      "activeBullet" es necesaria: con forEach, se entra en un nuevo callback y TS desconfía de que bullet pueda volver ser null.
+      Guardándola en una constante, TS ya no se queja.
+
+      Find devuelve el primer elemento con predicado no nulo -> devuelve OBJETO | undefined
+      Envolviendo la expresión entre (), comprobamos que exista dicho elemento -> devuelve (objeto | undefined) -boolean-
+    */
+    const activeBullet = this.bullet;
+    const defeatedUfo = this.UFOS.find((ufo) => this.isColliding(activeBullet, ufo));
+    const bulletHitsUfo = (defeatedUfo);
+    if(bulletHitsUfo){
+      this.bullet = null;
+      // TODO: dibujar explosión
+      this.removeUfo(defeatedUfo.id);
+      this.gameVariables.score += GAME_CONFIG.GAME_VARIABLES.SCORE_INCREMENT_PER_DEFEATED_UFO;
+      return;
+    }
+    
     // Si no, actualizar sus coordenadas (poner esta línea al final deja que se pinte por completo el desvanecimiento)
-    else this.bullet.y -= this.bullet.speed;
+    this.bullet.y -= this.bullet.speed;
+  }
+
+  private isColliding(entity: Entity, otherEntity: Entity): boolean {
+    const entityRect = {
+      left: entity.x,
+      right: entity.x + entity.width,
+      top: entity.y,
+      bottom: entity.y + entity.height, 
+    }
+    const otherEntityRect = {
+      left: otherEntity.x,
+      right: otherEntity.x + otherEntity.width,
+      top: otherEntity.y,
+      bottom: otherEntity.y + otherEntity.height,
+    };
+
+    // AABB (Axis-Aligned Bounding Box)
+    return (
+      entityRect.left < otherEntityRect.right &&
+      entityRect.right > otherEntityRect.left &&
+      entityRect.top < otherEntityRect.bottom &&
+      entityRect.bottom > otherEntityRect.top
+    );
+  }
+
+  private removeUfo(ufoId: number): void {
+    this.UFOS = this.UFOS.filter(ufo => ufo.id !== ufoId);
   }
 }

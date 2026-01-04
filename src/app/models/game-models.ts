@@ -7,15 +7,14 @@ export interface Entity {
 }
 
 export interface Ship extends Entity {
-    
 }
 
 export interface Bullet extends Entity {
-    active: boolean;
+
 }
 
 export interface Ufo extends Entity {
-    direction: number;
+    id: number;
     hit: boolean;
 }
 
@@ -27,16 +26,20 @@ export const GAME_CONFIG = {
   SHIP: {
     WIDTH: 30,
     HEIGHT: 50,
+    SPEED: 7,
     SRC: 'assets/ship.png',
+    MARGIN_BOTTOM: 3
   },
   UFO: {
     WIDTH: 40,
     HEIGHT: 40,
+    SPEED: 10,
     SRC: 'assets/ufo.png',
   },
   BULLET: {
-    WIDTH: 2,
-    HEIGHT: 5,
-    COLOR: 'red',
+    WIDTH: 6,
+    HEIGHT: 30,
+    SPEED: 12,
+    COLOR: '#FF0000',
   }
 };

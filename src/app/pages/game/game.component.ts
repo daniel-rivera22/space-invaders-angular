@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { OnInit, AfterViewInit, OnDestroy, inject} from '@angular/core';
 import {ElementRef, ViewChild} from '@angular/core'
+import { GAME_CONFIG } from '../../models/game-models';
 import { GameService } from '../../services/game.service';
 
 @Component({
@@ -30,8 +31,8 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadAssets() {
-    this.assets['ship'] = this.createHTMLImage('assets/ship.png');
-    this.assets['ufo'] = this.createHTMLImage('assets/ufo.png');
+    this.assets['ship'] = this.createHTMLImage(GAME_CONFIG.SHIP.SRC);
+    this.assets['ufo'] = this.createHTMLImage(GAME_CONFIG.UFO.SRC);
   }
 
   private createHTMLImage(path: string): HTMLImageElement {
@@ -61,7 +62,7 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onKeyDown(ke: KeyboardEvent) {
-    switch (ke.key) {
+    switch (ke.code) {
       case 'ArrowLeft':
         this.gameService.setMoveLeft(true);
         break;
@@ -70,7 +71,8 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
         this.gameService.setMoveRight(true);
         break;
 
-      case 'Spacebar':
+      case 'Space':
+        this.gameService.shoot();
         break;
 
       default:
@@ -89,19 +91,18 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
         this.gameService.setMoveRight(false);
         break;
 
-      case 'Spacebar':
-        break;
-
       default:
         break;
     }
   }
 
+  // OnKeyPress está en desuso
+
   /*
     Se usa arrow function ( ()=>{} ) porque mantiene el "this" constante; siempre es GameComponent, independientemente de quién llame a la función
     Es más limpio que usar .bind(this)
   */
-  private gameLoop = () => {
+  private readonly gameLoop = () => {
     this.gameService.update();
     this.draw();
     this.loopId = requestAnimationFrame(this.gameLoop); // this siempre será esta la instancia de GameComponent
@@ -114,12 +115,37 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
     this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     const ship = this.gameService.getShip();
+    const ufos = this.gameService.getUfos();
+    const bullet = this.gameService.getBullet();
 
-    if (ship && this.assets['ship']) {
-      this.ctx.fillStyle = '#00FF00'; // Fija el estilo de relleno del canva
-      this.ctx.fillRect(ship.x, ship.y, ship.width, ship.height); // Rellena el rect(angle)
+    drawShip(this.ctx, this.assets['ship']);
+    drawUfos(this.ctx, this.assets['ufo']);
+    drawBullet(this.ctx);
 
+    // Las funciones se "elevan" (hoising), por lo que se pueden usar a pesar de declararse debajo
+    function drawShip(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
+      if (!ship || !img) return;
+
+      ctx.fillStyle = '#00FF00'; // Fija el estilo de relleno del canva
+      ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
       // this.ctx.drawImage(this.assets['ship'], ship.x, ship.y, ship.width, ship.height);
+    }
+    
+    function drawUfos(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
+      if(ufos.length <= 0 || !img) return;
+
+      ufos.forEach((ufo) => {
+        ctx.fillStyle = '#0000FF';
+        ctx.fillRect(ufo.x, ufo.y, ufo.width, ufo.height);
+        // this.ctx.drawImage(this.assets['ufo'], ufo.x, ufo.y, ufo.width, ufo.height);
+      });
+    }
+      
+    function drawBullet(ctx: CanvasRenderingContext2D) {
+      if(!bullet) return;
+
+      ctx.fillStyle = GAME_CONFIG.BULLET.COLOR;
+      ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
     }
   }
 }

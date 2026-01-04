@@ -15,7 +15,7 @@ export const routes: Routes = [
   // Sin slash; ruta relativa
   { path: 'home', component: Home },
   { path: 'preferences', component: Preferences },
-  { path: 'game', component: Game },
+  { path: 'play', component: Game },
   { path: 'records', component: Records },
   { path: 'register', component: Register },
   { path: 'login', component: Login },

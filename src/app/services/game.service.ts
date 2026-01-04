@@ -20,7 +20,7 @@ export class GameService {
     score: 0,
     timeRemaining: 60,
     numberOfUfos: 3,
-  }
+  };
 
   // Flags de teclado, para evitar el retardo al mantener pulsado
   private leftArrowPressedFlag: boolean = false;
@@ -50,6 +50,23 @@ export class GameService {
 
   setMoveRight(state: boolean) {
     this.righArrowPressedFlag = state;
+  }
+
+  shoot(): void {
+    // Si da tiempo, TODO: meter sonido
+    if (this.bullet) return;
+
+    // Para que salga desde el centro del eje vertical de la nave:
+    const bulletX = this.ship.x + this.ship.width / 2 - GAME_CONFIG.BULLET.WIDTH / 2;
+    const bulletY = this.ship.y - GAME_CONFIG.BULLET.HEIGHT;
+
+    this.bullet = {
+      x: bulletX,
+      y: bulletY,
+      width: GAME_CONFIG.BULLET.WIDTH,
+      height: GAME_CONFIG.BULLET.HEIGHT,
+      speed: GAME_CONFIG.BULLET.SPEED,
+    };
   }
 
   setUp(canvasWidth: number, canvasHeight: number) {
@@ -137,28 +154,11 @@ export class GameService {
   // TODO: modificar función para implementar "mentalidad de colmena" y eliminar "efecto muelle"
   private updateUfosCoords(): void {
     this.UFOS.forEach((ufo) => {
-      if (ufo.x <= 0 || ufo.x + ufo.width >= this.width){
+      if (ufo.x <= 0 || ufo.x + ufo.width >= this.width) {
         ufo.speed *= -1;
       }
       ufo.x = this.calculateNextPosition(ufo.x, ufo.speed, 0, this.width - ufo.width);
     });
-  }
-
-  shoot(): void {
-    // Si da tiempo, TODO: meter sonido
-    if(this.bullet) return;
-
-    // Para que salga desde el centro del eje vertical de la nave:
-    const bulletX = this.ship.x + (this.ship.width / 2) - (GAME_CONFIG.BULLET.WIDTH / 2)
-    const bulletY = this.ship.y - GAME_CONFIG.BULLET.HEIGHT;
-
-    this.bullet = {
-      x: bulletX,
-      y: bulletY,
-      width: GAME_CONFIG.BULLET.WIDTH,
-      height: GAME_CONFIG.BULLET.HEIGHT,
-      speed: GAME_CONFIG.BULLET.SPEED,
-    }
   }
 
   private updateBulletCoords(): void {
@@ -167,7 +167,7 @@ export class GameService {
 
     // Comprobar si la bala se ha salido completamente del viewport -> implementa desvanecimiento en lugar de usar clamping
     const bulletCompletelyOutOfViewport = this.bullet.y + this.bullet.height <= 0;
-    if(bulletCompletelyOutOfViewport){
+    if (bulletCompletelyOutOfViewport) {
       this.bullet = null;
       this.gameVariables.score += GAME_CONFIG.GAME_VARIABLES.SCORE_INCREMENT_PER_MISSED_BULLET;
       return;
@@ -183,15 +183,15 @@ export class GameService {
     */
     const activeBullet = this.bullet;
     const defeatedUfo = this.UFOS.find((ufo) => this.isColliding(activeBullet, ufo));
-    const bulletHitsUfo = (defeatedUfo);
-    if(bulletHitsUfo){
+    const bulletHitsUfo = defeatedUfo;
+    if (bulletHitsUfo) {
       this.bullet = null;
       // TODO: dibujar explosión
       this.removeUfo(defeatedUfo.id);
       this.gameVariables.score += GAME_CONFIG.GAME_VARIABLES.SCORE_INCREMENT_PER_DEFEATED_UFO;
       return;
     }
-    
+
     // Si no, actualizar sus coordenadas (poner esta línea al final deja que se pinte por completo el desvanecimiento)
     this.bullet.y -= this.bullet.speed;
   }
@@ -201,8 +201,8 @@ export class GameService {
       left: entity.x,
       right: entity.x + entity.width,
       top: entity.y,
-      bottom: entity.y + entity.height, 
-    }
+      bottom: entity.y + entity.height,
+    };
     const otherEntityRect = {
       left: otherEntity.x,
       right: otherEntity.x + otherEntity.width,
@@ -220,6 +220,6 @@ export class GameService {
   }
 
   private removeUfo(ufoId: number): void {
-    this.UFOS = this.UFOS.filter(ufo => ufo.id !== ufoId);
+    this.UFOS = this.UFOS.filter((ufo) => ufo.id !== ufoId);
   }
 }

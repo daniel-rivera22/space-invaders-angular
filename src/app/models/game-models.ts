@@ -25,7 +25,7 @@ export const DEFAULT_GAME_PARAMS = {
   gameTime: 60,
   ufosToDeploy: 5,
   doubleSpeed: false,
-}
+};
 
 /*
   Encapsula todas las variables relacionadas con constantes de los elementos del juego
@@ -47,13 +47,13 @@ export const GAME_CONFIG = {
   },
   EXPLOSION: {
     DURATION: 800,
-    SRC: '/assets/explosion.gif'
+    SRC: '/assets/explosion.gif',
   },
   BULLET: {
     WIDTH: 6,
     HEIGHT: 30,
     SPEED: 12,
-    SRC: '/assets/bullet.png'
+    SRC: '/assets/bullet.png',
   },
   SCORE_EVENTS: {
     MISSED_BULLET: -25,

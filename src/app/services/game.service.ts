@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Entity, Ship, Ufo, Bullet, GAME_CONFIG, GameParams } from '../models/game-models';
+import {
+  Entity,
+  Ship,
+  Ufo,
+  Bullet,
+  GAME_CONFIG,
+  GameParams,
+  DEFAULT_GAME_PARAMS,
+} from '../models/game-models';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -22,8 +30,14 @@ export class GameService {
 
   // ========== PROPIEDADES PRIVADAS - Estado del juego ==========
   private score = 0;
-  private timeRemaining = 60;
-  private numberOfUfos = 5;
+  private readonly TOTAL_TIME = DEFAULT_GAME_PARAMS.gameTime;
+  private timeRemaining = this.TOTAL_TIME;
+  private readonly UFOS_TO_DEPLOY = DEFAULT_GAME_PARAMS.ufosToDeploy;
+  private readonly DOUBLE_SPEED = DEFAULT_GAME_PARAMS.doubleSpeed;
+
+  private finalScore = 0;
+
+  private defeatedUfos: number = 0;
 
   // ========== PROPIEDADES PRIVADAS - Controles ==========
   // Flags de teclado, para evitar el retardo al mantener pulsado
@@ -59,6 +73,10 @@ export class GameService {
 
   getScore() {
     return this.score;
+  }
+
+  getFinalScore() {
+    return this.finalScore;
   }
 
   // ========== MÉTODOS PÚBLICOS - Control ==========
@@ -198,7 +216,7 @@ export class GameService {
     const defeatedUfo = this.ufos.find(
       (ufo) => ufo.hit === false && this.isColliding(activeBullet, ufo),
     );
-    if ((defeatedUfo)) {
+    if (defeatedUfo) {
       this.execDefeatedUfoRoutine(defeatedUfo);
       return;
     }
@@ -210,11 +228,13 @@ export class GameService {
   // ========== MÉTODOS PRIVADOS - Lógica de juego ==========
   private execDefeatedUfoRoutine(defeatedUfo: Ufo) {
     this.bullet = null;
+    this.defeatedUfos++;
     defeatedUfo.hit = true;
     defeatedUfo.speed = 0;
     this.updateScore(GAME_CONFIG.SCORE_EVENTS.DEFEATED_UFO_SCORE);
     setTimeout(() => {
       this.removeUfo(defeatedUfo.id);
+      if (this.ufos.length === 0) this.initializeUfos();
     }, GAME_CONFIG.EXPLOSION.DURATION);
   }
 
@@ -223,6 +243,10 @@ export class GameService {
   }
 
   private endGame() {
+    this.finalScore =
+      this.score / (this.TOTAL_TIME / 60) -
+      50 * (this.UFOS_TO_DEPLOY - 1) +
+      250 * Number(this.DOUBLE_SPEED);
     this.gameOver$.next();
   }
 

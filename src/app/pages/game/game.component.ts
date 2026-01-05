@@ -37,7 +37,7 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.loadAssets();
     this.gameOverSubscription = this.gameService.gameOver$.subscribe(() => {
-      this.cdr.detectChanges() // Para que se printee sí o sí el time: 0
+      this.cdr.detectChanges(); // Para que se printee sí o sí el time: 0
       this.stopGameLoop();
       //TODO: Mostrar puntuaciones
     });
@@ -125,7 +125,7 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
     this.gameService.update();
     this.draw();
     this.cdr.detectChanges(); // Para que se actualicen los contadores aunque no haya eventos de por medio
-    
+
     this.loopId = requestAnimationFrame(this.gameLoop);
   };
 
@@ -173,7 +173,6 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
   private stopGameLoop() {
     this.isGameRunning = false;
     if (this.loopId) cancelAnimationFrame(this.loopId);
-
   }
 
   // ========== MÉTODOS PRIVADOS - Carga de recursos ==========

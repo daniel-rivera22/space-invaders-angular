@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { OnInit, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { ElementRef, ViewChild } from '@angular/core';
 import { GAME_CONFIG } from '../../models/game-models';
 import { GameService } from '../../services/game.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game',
@@ -11,34 +12,35 @@ import { GameService } from '../../services/game.service';
   styleUrl: './game.css',
 })
 export class Game implements OnInit, AfterViewInit, OnDestroy {
+  // ========== PROPIEDADES - Servicio inyectado ==========
   private readonly gameService = inject(GameService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
+  // ========== PROPIEDADES - Referencias DOM ==========
   /*
   - @ViewChild es la forma "correcta" de obtener la referencia a un objeto del DOM; usa la etiqueta del '#'.
   - ElementRef es un tipo envoltorio de seguridad que encapsula la referencia (como Optional<T> en Java)
   */
-
   @ViewChild('gameContainer') containerRef!: ElementRef<HTMLElement>;
   @ViewChild('gameCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
+  // ========== PROPIEDADES - Estado del componente ==========
   private ctx!: CanvasRenderingContext2D;
-  private loopId = 0; // Necesario para parar el juego
+  private loopId = 0;
+  private isGameRunning = true;
+  private gameOverSubscription!: Subscription;
 
+  // ========== PROPIEDADES - Assets ==========
   private assets: Record<string, HTMLImageElement> = {};
 
+  // ========== LIFECYCLE HOOKS ==========
   ngOnInit(): void {
     this.loadAssets();
-  }
-
-  private loadAssets() {
-    this.assets['ship'] = this.createHTMLImage(GAME_CONFIG.SHIP.SRC);
-    this.assets['ufo'] = this.createHTMLImage(GAME_CONFIG.UFO.SRC);
-  }
-
-  private createHTMLImage(path: string): HTMLImageElement {
-    const img = new Image();
-    img.src = path;
-    return img;
+    this.gameOverSubscription = this.gameService.gameOver$.subscribe(() => {
+      this.cdr.detectChanges() // Para que se printee sí o sí el time: 0
+      this.stopGameLoop();
+      //TODO: Mostrar puntuaciones
+    });
   }
 
   ngAfterViewInit(): void {
@@ -57,10 +59,24 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
     this.gameLoop();
   }
 
-  ngOnDestroy(): void {
-    if (this.loopId) cancelAnimationFrame(this.loopId);
+  ngOnDestroy() {
+    this.stopGameLoop(); // Por si acaso
+    if (this.gameOverSubscription) {
+      this.gameOverSubscription.unsubscribe();
+    }
   }
 
+  // ========== GETTERS ==========
+  // Propiedad de acceso -> parecen variables, se comportan como funciones
+  get time(): number {
+    return this.gameService.getTimeRemaining();
+  }
+
+  get score(): number {
+    return this.gameService.getScore();
+  }
+
+  // ========== EVENT HANDLERS ==========
   onKeyDown(ke: KeyboardEvent) {
     switch (ke.code) {
       case 'ArrowLeft':
@@ -98,14 +114,19 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
 
   // OnKeyPress está en desuso
 
+  // ========== MÉTODOS PRIVADOS - Game loop y render ==========
   /*
     Se usa arrow function ( ()=>{} ) porque mantiene el "this" constante; siempre es GameComponent, independientemente de quién llame a la función
     Es más limpio que usar .bind(this)
   */
   private readonly gameLoop = () => {
+    if (!this.isGameRunning) return;
+
     this.gameService.update();
     this.draw();
-    this.loopId = requestAnimationFrame(this.gameLoop); // this siempre será esta la instancia de GameComponent
+    this.cdr.detectChanges(); // Para que se actualicen los contadores aunque no haya eventos de por medio
+    
+    this.loopId = requestAnimationFrame(this.gameLoop);
   };
 
   private draw() {
@@ -119,33 +140,53 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
     const bullet = this.gameService.getBullet();
 
     drawShip(this.ctx, this.assets['ship']);
-    drawUfos(this.ctx, this.assets['ufo']);
-    drawBullet(this.ctx);
+    drawUfos(this.ctx, this.assets['ufo'], this.assets['explosion']);
+    drawBullet(this.ctx, this.assets['bullet']);
 
     // Las funciones se "elevan" (hoising), por lo que se pueden usar a pesar de declararse debajo
     function drawShip(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
       if (!ship || !img) return;
-
-      ctx.fillStyle = '#00FF00'; // Fija el estilo de relleno del canva
-      ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
-      // this.ctx.drawImage(this.assets['ship'], ship.x, ship.y, ship.width, ship.height);
+      ctx.drawImage(img, ship.x, ship.y, ship.width, ship.height);
     }
 
-    function drawUfos(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
-      if (ufos.length <= 0 || !img) return;
+    function drawUfos(
+      ctx: CanvasRenderingContext2D,
+      ufoImg: HTMLImageElement,
+      explosionImg: HTMLImageElement,
+    ) {
+      if (ufos.length <= 0) return;
 
       ufos.forEach((ufo) => {
-        ctx.fillStyle = '#0000FF';
-        ctx.fillRect(ufo.x, ufo.y, ufo.width, ufo.height);
-        // this.ctx.drawImage(this.assets['ufo'], ufo.x, ufo.y, ufo.width, ufo.height);
+        if (ufo.hit && explosionImg)
+          ctx.drawImage(explosionImg, ufo.x, ufo.y, ufo.width, ufo.height);
+        else if (!ufo.hit && ufoImg) ctx.drawImage(ufoImg, ufo.x, ufo.y, ufo.width, ufo.height);
       });
     }
 
-    function drawBullet(ctx: CanvasRenderingContext2D) {
-      if (!bullet) return;
-
-      ctx.fillStyle = GAME_CONFIG.BULLET.COLOR;
-      ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+    function drawBullet(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
+      if (!bullet || !img) return;
+      ctx.drawImage(img, bullet.x, bullet.y, bullet.width, bullet.height);
     }
+  }
+
+  // ========== MÉTODOS PRIVADOS - Gestión del loop ==========
+  private stopGameLoop() {
+    this.isGameRunning = false;
+    if (this.loopId) cancelAnimationFrame(this.loopId);
+
+  }
+
+  // ========== MÉTODOS PRIVADOS - Carga de recursos ==========
+  private loadAssets() {
+    this.assets['ship'] = this.createHTMLImage(GAME_CONFIG.SHIP.SRC);
+    this.assets['ufo'] = this.createHTMLImage(GAME_CONFIG.UFO.SRC);
+    this.assets['bullet'] = this.createHTMLImage(GAME_CONFIG.BULLET.SRC);
+    this.assets['explosion'] = this.createHTMLImage(GAME_CONFIG.EXPLOSION.SRC);
+  }
+
+  private createHTMLImage(path: string): HTMLImageElement {
+    const img = new Image();
+    img.src = path;
+    return img;
   }
 }

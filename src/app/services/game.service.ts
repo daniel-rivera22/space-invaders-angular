@@ -5,7 +5,6 @@ import {
   Ufo,
   Bullet,
   GAME_CONFIG,
-  GameParams,
   DEFAULT_GAME_PARAMS,
 } from '../models/game-models';
 import { Subject } from 'rxjs';
@@ -148,19 +147,28 @@ export class GameService {
 
   private initializeUfos(): void {
     let idGenerator = 0;
-    //TODO: Escalarlo a N ufos
-    const startX = (this.width - GAME_CONFIG.UFO.WIDTH) / 2;
-    const ufo = {
-      x: startX,
-      y: GAME_CONFIG.UFO.HEIGHT,
-      width: GAME_CONFIG.UFO.WIDTH,
-      height: GAME_CONFIG.UFO.HEIGHT,
-      speed: GAME_CONFIG.UFO.SPEED,
-      id: idGenerator,
-      hit: false,
-    };
-    this.ufos.push(ufo);
-    idGenerator++;
+    let directionChanger = 1;
+    let x;
+    let y;
+    for(let i = 0; i < this.UFOS_TO_DEPLOY; i++){
+      x = GAME_CONFIG.UFO.WIDTH + (GAME_CONFIG.UFO.WIDTH*0.75*i)
+      y = GAME_CONFIG.UFO.HEIGHT + (GAME_CONFIG.UFO.HEIGHT*0.75*i)
+      let ufo = {
+        x,
+        y,
+        width: GAME_CONFIG.UFO.WIDTH,
+        height: GAME_CONFIG.UFO.HEIGHT,
+        speed: directionChanger * GAME_CONFIG.UFO.SPEED,
+        id: idGenerator,
+        hit: false,
+      }
+
+      directionChanger *= -1
+      this.ufos.push(ufo);
+      idGenerator++;
+    }
+    
+    
   }
 
   // ========== MÉTODOS PRIVADOS - Actualización de entidades ==========
@@ -184,12 +192,12 @@ export class GameService {
 
   // TODO: modificar función para implementar "mentalidad de colmena" y eliminar "efecto muelle"
   private updateUfosCoords(): void {
-    this.ufos.forEach((ufo) => {
+    for (const ufo of this.ufos) {
       if (ufo.x <= 0 || ufo.x + ufo.width >= this.width) {
         ufo.speed *= -1;
       }
       ufo.x = this.calculateNextPosition(ufo.x, ufo.speed, 0, this.width - ufo.width);
-    });
+    }
   }
 
   private updateBulletCoords(): void {

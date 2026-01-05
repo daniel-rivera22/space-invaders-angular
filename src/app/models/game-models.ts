@@ -15,12 +15,6 @@ export interface Ufo extends Entity {
 
 export interface Bullet extends Entity {}
 
-export interface GameParams {
-  gameTime: number;
-  ufosToDeploy: number;
-  doubleSpeed: boolean;
-}
-
 export const DEFAULT_GAME_PARAMS = {
   gameTime: 60,
   ufosToDeploy: 5,

@@ -9,23 +9,23 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
   styleUrl: './register.css',
 })
 export class Register {
-  registerForm = new FormGroup({
-    username: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', Validators.required),
-    confirmPassword: new FormControl('', Validators.required),
-  }, {validators: isSamePassword});
+  registerForm = new FormGroup(
+    {
+      username: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required),
+      confirmPassword: new FormControl('', Validators.required),
+    },
+    { validators: isSamePassword },
+  );
 
-  handleSubmit(): void{
-    if(this.registerForm.hasError('incorrectPasswordConfirmation'))
-      alert("Las contraseñas no coinciden.");
-
-    else if(this.registerForm.valid){
+  handleSubmit(): void {
+    if (this.registerForm.hasError('incorrectPasswordConfirmation'))
+      alert('Las contraseñas no coinciden.');
+    else if (this.registerForm.valid) {
       // AQUÍ SE PROCESAN Y ENVÍAN DATOS AL BACKEND
-    }
-
-    else{
-      alert("Formulario no válido. Revise los campos y vuelva a enviar.")
+    } else {
+      alert('Formulario no válido. Revise los campos y vuelva a enviar.');
       this.registerForm.markAllAsTouched(); // TRUCO: Para que aparezcan todos los errores
     }
   }
@@ -35,6 +35,6 @@ function isSamePassword(registerForm: AbstractControl): ValidationErrors | null 
   const pswd = registerForm.get('password')?.value;
   const confirmPswd = registerForm.get('confirmPassword')?.value;
 
-  if(pswd === confirmPswd) return null;
-  else return {incorrectPasswordConfirmation: true};
+  if (pswd === confirmPswd) return null;
+  else return { incorrectPasswordConfirmation: true };
 }

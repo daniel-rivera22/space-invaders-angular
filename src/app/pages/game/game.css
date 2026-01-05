@@ -1,13 +1,13 @@
 /* :host selecciona la etiqueta <app-game> en sí misma */
 :host {
-    display: block;
-    /* Comportamiento de bloque */
-    width: 100%;
-    /* Ancho total */
-    height: 100%;
-    /* Alto total del padre (<main>) */
+  display: block;
+  /* Comportamiento de bloque */
+  width: 100%;
+  /* Ancho total */
+  height: 100%;
+  /* Alto total del padre (<main>) */
 }
 
 .game-canvas {
-    outline: none;
+  outline: none;
 }

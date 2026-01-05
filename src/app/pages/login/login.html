@@ -1,32 +1,33 @@
-        <form id="login-form" class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white">
-          <h3 class="text-warning">Login Form</h3>
-          <div class="mb-3">
-            <label for="username" class="form-label">User</label>
-            <input
-              type="text"
-              name="username"
-              id="username"
+<form
+  id="login-form"
+  class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white"
+>
+  <h3 class="text-warning">Login Form</h3>
+  <div class="mb-3">
+    <label for="username" class="form-label">User</label>
+    <input
+      type="text"
+      name="username"
+      id="username"
+      formControlName="username"
+      class="form-control"
+      placeholder="User"
+      required
+    />
+  </div>
 
-              formControlName="username"
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input
+      type="password"
+      name="password"
+      id="password"
+      formControlName="password"
+      class="form-control"
+      placeholder="Password"
+      required
+    />
+  </div>
 
-              class="form-control"
-              placeholder="User"
-              required/>
-          </div>
-
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-
-              formControlName="password"
-
-              class="form-control"
-              placeholder="Password"
-              required/>
-          </div>
-
-          <button id="submit-login-button" type="button" class="btn btn-primary w-100">Log in</button>
-        </form>
+  <button id="submit-login-button" type="button" class="btn btn-primary w-100">Log in</button>
+</form>

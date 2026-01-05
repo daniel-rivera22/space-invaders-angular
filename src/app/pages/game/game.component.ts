@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { OnInit, AfterViewInit, OnDestroy, inject} from '@angular/core';
-import {ElementRef, ViewChild} from '@angular/core'
+import { OnInit, AfterViewInit, OnDestroy, inject } from '@angular/core';
+import { ElementRef, ViewChild } from '@angular/core';
 import { GAME_CONFIG } from '../../models/game-models';
 import { GameService } from '../../services/game.service';
 
@@ -20,7 +20,7 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('gameContainer') containerRef!: ElementRef<HTMLElement>;
   @ViewChild('gameCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
-  
+
   private ctx!: CanvasRenderingContext2D;
   private loopId = 0; // Necesario para parar el juego
 
@@ -130,9 +130,9 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
       ctx.fillRect(ship.x, ship.y, ship.width, ship.height);
       // this.ctx.drawImage(this.assets['ship'], ship.x, ship.y, ship.width, ship.height);
     }
-    
+
     function drawUfos(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
-      if(ufos.length <= 0 || !img) return;
+      if (ufos.length <= 0 || !img) return;
 
       ufos.forEach((ufo) => {
         ctx.fillStyle = '#0000FF';
@@ -140,9 +140,9 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
         // this.ctx.drawImage(this.assets['ufo'], ufo.x, ufo.y, ufo.width, ufo.height);
       });
     }
-      
+
     function drawBullet(ctx: CanvasRenderingContext2D) {
-      if(!bullet) return;
+      if (!bullet) return;
 
       ctx.fillStyle = GAME_CONFIG.BULLET.COLOR;
       ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);

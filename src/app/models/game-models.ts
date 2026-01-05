@@ -1,21 +1,18 @@
 export interface Entity {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    speed: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  speed: number;
 }
 
-export interface Ship extends Entity {
-}
+export interface Ship extends Entity {}
 
-export interface Bullet extends Entity {
-
-}
+export interface Bullet extends Entity {}
 
 export interface Ufo extends Entity {
-    id: number;
-    hit: boolean;
+  id: number;
+  hit: boolean;
 }
 
 /*
@@ -28,7 +25,7 @@ export const GAME_CONFIG = {
     HEIGHT: 50,
     SPEED: 7,
     SRC: 'assets/ship.png',
-    MARGIN_BOTTOM: 3
+    MARGIN_BOTTOM: 3,
   },
   UFO: {
     WIDTH: 40,
@@ -45,5 +42,5 @@ export const GAME_CONFIG = {
   GAME_VARIABLES: {
     SCORE_INCREMENT_PER_MISSED_BULLET: -25,
     SCORE_INCREMENT_PER_DEFEATED_UFO: 100,
-  }
+  },
 };

@@ -30,10 +30,11 @@ export class GameService {
   private timeRemaining!: number;
   private timeIntervalId!: number;
 
-  // ========== PROPIEDADES PRIVADAS - Controles ==========
+  // ========== PROPIEDADES PRIVADAS - Flags ==========
   // Flags de teclado, para evitar el retardo al mantener pulsado
   private leftArrowPressedFlag: boolean = false;
   private righArrowPressedFlag: boolean = false;
+  private speedDoubled = false;
 
   // ========== CONSTRUCTOR ==========
   constructor() {
@@ -242,6 +243,7 @@ export class GameService {
       this.removeUfo(defeatedUfo.id);
       if (this.ufos.length === 0) this.initializeUfos();
       else if (
+        !this.speedDoubled &&
         this.gamePreferences.DOUBLE_SPEED &&
         this.ufos.length <= this.gamePreferences.UFOS_TO_DEPLOY / 2
       )
@@ -254,7 +256,8 @@ export class GameService {
   }
 
   private doubleUfosSpeed() {
-    this.ufos.forEach((ufo) => (ufo.speed *= 2));
+    this.ufos.forEach((ufo) => (ufo.speed = 2 * GAME_CONFIG.UFO.SPEED));
+    this.speedDoubled = true;
   }
 
   private endGame() {

@@ -1,6 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { GameService } from '../../services/game.service';
-import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -10,12 +8,11 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
   styleUrl: './preferences.css',
 })
 export class Preferences {
-  private gameService = inject(GameService);
-  private router = inject(Router);
-
   preferencesForm = new FormGroup({
-    numberOfUfos: new FormControl(''),
-    time: new FormControl(''),
-    doubleSpeed: new FormControl(''),
+    numberOfUfos: new FormControl(Validators.min(1), Validators.max(9)),
+    time: new FormControl(Validators.min(60), Validators.max(180)),
+    doubleSpeed: new FormControl(),
   });
+
+  //TODO: Implementar validador personalizado para simular `step` del formulario HTML
 }

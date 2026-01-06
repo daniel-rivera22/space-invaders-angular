@@ -1,13 +1,6 @@
 import { Injectable } from '@angular/core';
-import {
-  Entity,
-  Ship,
-  Ufo,
-  Bullet,
-  GAME_CONFIG,
-  DEFAULT_GAME_PARAMS,
-} from '../models/game-models';
-import { Subject } from 'rxjs';
+import { Entity, Ship, Ufo, Bullet, GAME_CONFIG, DEFAULT_GAME_PARAMS } from '../models/game-models';
+import { Subject, using } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -150,9 +143,9 @@ export class GameService {
     let directionChanger = 1;
     let x;
     let y;
-    for(let i = 0; i < this.UFOS_TO_DEPLOY; i++){
-      x = GAME_CONFIG.UFO.WIDTH + (GAME_CONFIG.UFO.WIDTH*0.75*i)
-      y = GAME_CONFIG.UFO.HEIGHT + (GAME_CONFIG.UFO.HEIGHT*0.75*i)
+    for (let i = 0; i < this.UFOS_TO_DEPLOY; i++) {
+      x = GAME_CONFIG.UFO.WIDTH + GAME_CONFIG.UFO.WIDTH * 0.75 * i;
+      y = GAME_CONFIG.UFO.HEIGHT + GAME_CONFIG.UFO.HEIGHT * 0.75 * i;
       let ufo = {
         x,
         y,
@@ -161,14 +154,12 @@ export class GameService {
         speed: directionChanger * GAME_CONFIG.UFO.SPEED,
         id: idGenerator,
         hit: false,
-      }
+      };
 
-      directionChanger *= -1
+      directionChanger *= -1;
       this.ufos.push(ufo);
       idGenerator++;
     }
-    
-    
   }
 
   // ========== MÉTODOS PRIVADOS - Actualización de entidades ==========
@@ -243,11 +234,16 @@ export class GameService {
     setTimeout(() => {
       this.removeUfo(defeatedUfo.id);
       if (this.ufos.length === 0) this.initializeUfos();
+      else if (this.DOUBLE_SPEED && (this.ufos.length <= this.UFOS_TO_DEPLOY / 2)) this.doubleUfosSpeed();
     }, GAME_CONFIG.EXPLOSION.DURATION);
   }
 
   private updateScore(scoreIncrement: number) {
     this.score += scoreIncrement;
+  }
+
+  private doubleUfosSpeed() {
+    this.ufos.forEach((ufo) => (ufo.speed *= 2));
   }
 
   private endGame() {

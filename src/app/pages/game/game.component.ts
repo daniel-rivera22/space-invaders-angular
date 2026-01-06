@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { OnInit, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { ElementRef, ViewChild } from '@angular/core';
-import { GAME_CONFIG } from '../../models/game-models';
+import { GAME_CONFIG } from '../../models/gameModels';
 import { GameService } from '../../services/game.service';
 import { Subscription } from 'rxjs';
 

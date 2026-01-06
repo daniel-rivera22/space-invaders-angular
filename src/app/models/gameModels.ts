@@ -15,10 +15,16 @@ export interface Ufo extends Entity {
 
 export interface Bullet extends Entity {}
 
-export const DEFAULT_GAME_PARAMS = {
-  gameTime: 60,
-  ufosToDeploy: 5,
-  doubleSpeed: false,
+export interface GamePreferences {
+  readonly GAME_TIME: number;
+  readonly UFOS_TO_DEPLOY: number;
+  readonly DOUBLE_SPEED: boolean;
+}
+
+export const DEFAULT_GAME_PREFERENCES: GamePreferences = {
+  GAME_TIME: 60,
+  UFOS_TO_DEPLOY: 5,
+  DOUBLE_SPEED: false,
 };
 
 /*
@@ -31,7 +37,7 @@ export const GAME_CONFIG = {
     HEIGHT: 50,
     SPEED: 7,
     SRC: '/assets/ship.png',
-    MARGIN_BOTTOM: 3,
+    MARGIN_BOTTOM: 50,
   },
   UFO: {
     WIDTH: 40,

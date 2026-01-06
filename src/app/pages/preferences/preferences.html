@@ -1,19 +1,10 @@
-<form
-  [formGroup]="preferencesForm"
-  class="border rounded p-4 bg-dark text-white d-flex flex-column gap-3"
->
-  <h3 class="text-warning">Preferences Form</h3>
+<form [formGroup]="preferencesForm" (ngSubmit)="onSubmit()">
   <div class="mb-3">
     <label for="number-of-ufos" class="form-label">Number of UFOs</label>
-    <select
-      name="number-of-ufos"
-      id="number-of-ufos"
-      formControlName="numberOfUfos"
-      class="form-select"
-    >
-      <option value="1">1</option>
-      <option value="5">5</option>
-      <option value="9">9</option>
+    <select id="number-of-ufos" formControlName="numberOfUfos" class="form-select">
+      <option [ngValue]="1">1</option>
+      <option [ngValue]="5">5</option>
+      <option [ngValue]="9">9</option>
     </select>
   </div>
 
@@ -21,13 +12,11 @@
     <label for="time" class="form-label">Time (s)</label>
     <input
       type="number"
-      name="time"
       id="time"
       formControlName="time"
       min="60"
       max="180"
       step="60"
-      value="60"
       class="form-control"
     />
   </div>
@@ -36,12 +25,13 @@
     <label for="double-speed" class="form-check-label">Double speed</label>
     <input
       type="checkbox"
-      name="double-speed"
       id="double-speed"
       formControlName="doubleSpeed"
       class="form-check-input"
     />
   </div>
 
-  <button type="submit" class="btn btn-primary w-100">Play</button>
+  <button type="submit" class="btn btn-primary w-100" [disabled]="preferencesForm.invalid">
+    Play
+  </button>
 </form>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Entity, Ship, Ufo, Bullet, GAME_CONFIG, DEFAULT_GAME_PARAMS } from '../models/game-models';
-import { Subject, using } from 'rxjs';
+import { Entity, Ship, Ufo, Bullet, GAME_CONFIG, DEFAULT_GAME_PREFERENCES, GamePreferences } from '../models/gameModels';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,20 +16,19 @@ export class GameService {
     Usar ! le dice a TS que se "fíe" de que se va a inicializar la variable desde fuera
     Sirve para no inicializar un objeto con datos falsos solo para satisfacer al compilador
   */
-  private ship!: Ship;
+  private ship!: Ship; // No podemos inicializarla hasta saber las coordenadas del canvas: '!'
   private ufos: Ufo[] = [];
   private bullet: Bullet | null = null; // No existe Optional<> porque TS lo maneja así
 
   // ========== PROPIEDADES PRIVADAS - Estado del juego ==========
+  private gamePreferences: GamePreferences;
+
   private score = 0;
-  private readonly TOTAL_TIME = DEFAULT_GAME_PARAMS.gameTime;
-  private timeRemaining = this.TOTAL_TIME;
-  private readonly UFOS_TO_DEPLOY = DEFAULT_GAME_PARAMS.ufosToDeploy;
-  private readonly DOUBLE_SPEED = DEFAULT_GAME_PARAMS.doubleSpeed;
-
-  private finalScore = 0;
-
   private defeatedUfos: number = 0;
+
+  // No vamos a inicializarlo hasta que sepamos si se han personalizado las preferences: '!'
+  private timeRemaining!: number;
+  private timeIntervalId!: number;
 
   // ========== PROPIEDADES PRIVADAS - Controles ==========
   // Flags de teclado, para evitar el retardo al mantener pulsado
@@ -37,7 +36,9 @@ export class GameService {
   private righArrowPressedFlag: boolean = false;
 
   // ========== CONSTRUCTOR ==========
-  constructor() {}
+  constructor() {
+    this.gamePreferences = DEFAULT_GAME_PREFERENCES;
+  }
 
   // ========== MÉTODOS PÚBLICOS - Setup ==========
   setUp(canvasWidth: number, canvasHeight: number) {
@@ -67,10 +68,6 @@ export class GameService {
     return this.score;
   }
 
-  getFinalScore() {
-    return this.finalScore;
-  }
-
   // ========== MÉTODOS PÚBLICOS - Control ==========
   setMoveLeft(state: boolean) {
     this.leftArrowPressedFlag = state;
@@ -78,6 +75,10 @@ export class GameService {
 
   setMoveRight(state: boolean) {
     this.righArrowPressedFlag = state;
+  }
+
+  setGamePreferences(gamePreferences: GamePreferences) {
+    this.gamePreferences = gamePreferences;
   }
 
   shoot(): void {
@@ -96,16 +97,6 @@ export class GameService {
     };
   }
 
-  startTimer() {
-    const timerIntervalId = setInterval(() => {
-      this.timeRemaining--;
-      if (this.timeRemaining <= 0) {
-        clearInterval(timerIntervalId);
-        this.endGame();
-      }
-    }, 1000);
-  }
-
   // ========== MÉTODO PÚBLICO - Loop principal ==========
   update() {
     // Early return; evita sobrecargar el código de tabulaciones
@@ -120,7 +111,7 @@ export class GameService {
   private launchGame() {
     this.initializeShip();
     this.initializeUfos();
-    this.startTimer();
+    this.initializeTimer();
   }
 
   private initializeShip(): void {
@@ -139,11 +130,14 @@ export class GameService {
   }
 
   private initializeUfos(): void {
+    // Limpiar array: el servicio es Singleton y no se destruye aunque cambies de ruta
+    this.ufos = [];
+
     let idGenerator = 0;
     let directionChanger = 1;
     let x;
     let y;
-    for (let i = 0; i < this.UFOS_TO_DEPLOY; i++) {
+    for (let i = 0; i < this.gamePreferences.UFOS_TO_DEPLOY; i++) {
       x = GAME_CONFIG.UFO.WIDTH + GAME_CONFIG.UFO.WIDTH * 0.75 * i;
       y = GAME_CONFIG.UFO.HEIGHT + GAME_CONFIG.UFO.HEIGHT * 0.75 * i;
       let ufo = {
@@ -160,6 +154,19 @@ export class GameService {
       this.ufos.push(ufo);
       idGenerator++;
     }
+  }
+
+  initializeTimer() {
+    this.timeRemaining = this.gamePreferences.GAME_TIME;
+    if (this.timeIntervalId) clearInterval(this.timeIntervalId);
+
+    this.timeIntervalId = setInterval(() => {
+      this.timeRemaining--;
+      if (this.timeRemaining <= 0) {
+        clearInterval(this.timeIntervalId);
+        this.endGame();
+      }
+    }, 1000);
   }
 
   // ========== MÉTODOS PRIVADOS - Actualización de entidades ==========
@@ -234,7 +241,11 @@ export class GameService {
     setTimeout(() => {
       this.removeUfo(defeatedUfo.id);
       if (this.ufos.length === 0) this.initializeUfos();
-      else if (this.DOUBLE_SPEED && (this.ufos.length <= this.UFOS_TO_DEPLOY / 2)) this.doubleUfosSpeed();
+      else if (
+        this.gamePreferences.DOUBLE_SPEED &&
+        this.ufos.length <= this.gamePreferences.UFOS_TO_DEPLOY / 2
+      )
+        this.doubleUfosSpeed();
     }, GAME_CONFIG.EXPLOSION.DURATION);
   }
 
@@ -247,10 +258,11 @@ export class GameService {
   }
 
   private endGame() {
-    this.finalScore =
-      this.score / (this.TOTAL_TIME / 60) -
-      50 * (this.UFOS_TO_DEPLOY - 1) +
-      250 * Number(this.DOUBLE_SPEED);
+    const finalScore =
+      this.score / (this.gamePreferences.GAME_TIME / 60) -
+      50 * (this.gamePreferences.UFOS_TO_DEPLOY - 1) +
+      250 * Number(this.gamePreferences.DOUBLE_SPEED);
+    // TODO: Mostrar puntuación al final de la partida
     this.gameOver$.next();
   }
 

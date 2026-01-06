@@ -19,7 +19,7 @@ export class Register {
     { validators: isSamePassword },
   );
 
-  handleSubmit(): void {
+  onSubmit(): void {
     if (this.registerForm.hasError('incorrectPasswordConfirmation'))
       alert('Las contraseñas no coinciden.');
     else if (this.registerForm.valid) {

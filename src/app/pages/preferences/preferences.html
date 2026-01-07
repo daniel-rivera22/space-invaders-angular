@@ -1,4 +1,8 @@
-<form [formGroup]="preferencesForm" (ngSubmit)="onSubmit()">
+<form
+  [formGroup]="preferencesForm"
+  (ngSubmit)="onSubmit()"
+  class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white"
+>
   <div class="mb-3">
     <label for="number-of-ufos" class="form-label">Number of UFOs</label>
     <select id="number-of-ufos" formControlName="numberOfUfos" class="form-select">

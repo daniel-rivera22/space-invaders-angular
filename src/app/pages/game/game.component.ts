@@ -52,7 +52,7 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
 
     this.ctx = canvas.getContext('2d')!;
 
-    this.gameService.setUp(canvas.width, canvas.height);
+    this.gameService.setup(canvas.width, canvas.height);
 
     canvas.focus(); // Para no tener que hacer clic en él
 

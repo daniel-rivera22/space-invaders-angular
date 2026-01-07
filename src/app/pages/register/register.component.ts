@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'; // Validador personalizado
+import { createNonNullableFormControl } from '../../utils/formFactories';
 
 @Component({
   selector: 'app-register',
@@ -11,10 +12,10 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 export class Register {
   registerForm = new FormGroup(
     {
-      username: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', Validators.required),
-      confirmPassword: new FormControl('', Validators.required),
+      username: createNonNullableFormControl(''),
+      email: createNonNullableFormControl('', [Validators.email]),
+      password: createNonNullableFormControl(''),
+      confirmPassword: createNonNullableFormControl(''),
     },
     { validators: isSamePassword },
   );
@@ -32,9 +33,8 @@ export class Register {
 }
 
 function isSamePassword(registerForm: AbstractControl): ValidationErrors | null {
-  const pswd = registerForm.get('password')?.value;
-  const confirmPswd = registerForm.get('confirmPassword')?.value;
+  const { password, confirmPassword } = registerForm.getRawValue();
 
-  if (pswd === confirmPswd) return null;
+  if (password === confirmPassword) return null;
   else return { incorrectPasswordConfirmation: true };
 }

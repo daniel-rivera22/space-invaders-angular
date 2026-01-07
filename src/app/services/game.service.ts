@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Entity, Ship, Ufo, Bullet, GAME_CONFIG, DEFAULT_GAME_PREFERENCES, GamePreferences } from '../models/gameModels';
+import {
+  Entity,
+  Ship,
+  Ufo,
+  Bullet,
+  GAME_CONFIG,
+  DEFAULT_GAME_PREFERENCES,
+  GamePreferences,
+} from '../models/gameModels';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -42,7 +50,7 @@ export class GameService {
   }
 
   // ========== MÉTODOS PÚBLICOS - Setup ==========
-  setUp(canvasWidth: number, canvasHeight: number) {
+  setup(canvasWidth: number, canvasHeight: number) {
     this.width = canvasWidth;
     this.height = canvasHeight;
     this.launchGame();
@@ -223,13 +231,11 @@ export class GameService {
     const defeatedUfo = this.ufos.find(
       (ufo) => ufo.hit === false && this.isColliding(activeBullet, ufo),
     );
-    if (defeatedUfo) {
-      this.execDefeatedUfoRoutine(defeatedUfo);
-      return;
-    }
+    
+    if (defeatedUfo) this.execDefeatedUfoRoutine(defeatedUfo);
 
     // Si no, actualizar sus coordenadas (poner esta línea al final deja que se pinte por completo el desvanecimiento)
-    this.bullet.y -= this.bullet.speed;
+    else this.bullet.y -= this.bullet.speed;
   }
 
   // ========== MÉTODOS PRIVADOS - Lógica de juego ==========

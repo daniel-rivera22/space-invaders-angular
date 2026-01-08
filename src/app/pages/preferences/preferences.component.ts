@@ -18,11 +18,11 @@ export class Preferences {
   preferencesForm = new FormGroup({
     numberOfUfos: createNonNullableFormControl(
       DEFAULT_GAME_PREFERENCES.UFOS_TO_DEPLOY,
-      [Validators.min(1), Validators.max(9)]
+      {validators: [Validators.min(1), Validators.max(9)]}
     ),
     time: createNonNullableFormControl(
       DEFAULT_GAME_PREFERENCES.GAME_TIME,
-      [Validators.min(60), Validators.max(180)]
+      {validators: [Validators.min(60), Validators.max(180)]}
     ),
     doubleSpeed: createNonNullableFormControl(DEFAULT_GAME_PREFERENCES.DOUBLE_SPEED),
   });

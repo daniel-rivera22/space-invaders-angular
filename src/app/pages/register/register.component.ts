@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { AbstractControl, ValidationErrors, ValidatorFn, AsyncValidatorFn } from '@angular/forms'; // Validador personalizado
 import { createNonNullableFormControl } from '../../utils/formFactories';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, MAX_USERNAME_LENGTH } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -15,8 +15,10 @@ export class Register {
 
   registerForm = new FormGroup(
     {
-      username: createNonNullableFormControl('', [Validators.max(8)], [this.uniqueUsernameValidator()]),
-      email: createNonNullableFormControl('', [Validators.email]),
+      username: createNonNullableFormControl('', {
+        validators: [Validators.max(MAX_USERNAME_LENGTH), this.uniqueUsernameValidator()],
+      }),
+      email: createNonNullableFormControl('', { validators: Validators.email }),
       password: createNonNullableFormControl(''),
       confirmPassword: createNonNullableFormControl(''),
     },
@@ -31,7 +33,7 @@ export class Register {
       this.registerForm.markAllAsTouched(); // TRUCO: Para que aparezcan todos los errores
     } else {
       // userData se convierte en el resto de getRawValue al quitarle confirmPassword, es decir, los argumentos del POST
-      const {confirmPassword, ...userData} = this.registerForm.getRawValue();
+      const { confirmPassword, ...userData } = this.registerForm.getRawValue();
       this.authService.register(userData);
     }
   }

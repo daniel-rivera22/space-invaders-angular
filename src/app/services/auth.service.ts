@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, WritableSignal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -6,7 +6,17 @@ import { lastValueFrom } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
+
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export const MAX_USERNAME_LENGTH = 8;
+
 export class AuthService {
+
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
@@ -131,10 +141,4 @@ export class AuthService {
       this.startSession(timeLeft); // Sesión "reciclada"; token antiguo pero válido
     else this.logout(); // Sesión caducada; token caducado -> ejecutar logout
   }
-}
-
-export interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
 }

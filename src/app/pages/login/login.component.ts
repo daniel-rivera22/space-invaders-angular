@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, MAX_USERNAME_LENGTH } from '../../services/auth.service';
 import { createNonNullableFormControl } from '../../utils/formFactories';
 
 @Component({
@@ -13,7 +13,7 @@ export class Login {
   public readonly authServer = inject(AuthService);
 
   loginForm = new FormGroup({
-    username: createNonNullableFormControl('user1'),
+    username: createNonNullableFormControl('user1', {validators: Validators.max(MAX_USERNAME_LENGTH)}),
     password: createNonNullableFormControl('user1'),
   });
 

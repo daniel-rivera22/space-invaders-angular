@@ -3,9 +3,6 @@ import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angula
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
 
 export interface RegisterRequest {
   username: string;
@@ -14,6 +11,10 @@ export interface RegisterRequest {
 }
 
 export const MAX_USERNAME_LENGTH = 8;
+
+@Injectable({
+  providedIn: 'root',
+})
 
 export class AuthService {
 

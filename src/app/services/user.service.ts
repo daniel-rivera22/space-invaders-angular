@@ -25,6 +25,7 @@ export class UserService {
   private readonly authService = inject(AuthService);
 
   private readonly RECORDS_API_URL = 'http://wd.etsisi.upm.es:10000/records';
+  private readonly LOCAL_API_URL = 'http://localhost:3000/records/';
 
   /* Se puede hacer de dos formas:
      - Recuperar el token manualmente (para salir del paso) ((Lo que voy a hacer))

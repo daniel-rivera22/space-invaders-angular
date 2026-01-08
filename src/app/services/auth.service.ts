@@ -10,7 +10,8 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  private readonly API_URL = 'http://wd.etsisi.upm.es:10000/users/login';
+  private readonly LOGIN_API_URL = 'http://wd.etsisi.upm.es:10000/users/login';
+  private readonly USERS_API_URL = 'http://wd.etsisi.upm.es:10000/users';
   private readonly TOKEN_HEADER_NAME = 'Authorization';
   private readonly STORAGE_KEY = 'authToken';
   private readonly EXPIRATION_KEY = 'tokenExpiration';
@@ -24,28 +25,56 @@ export class AuthService {
     this.recoverSession();
   }
 
-  login(username: string, pswd: string) {
+  login(username: string, pswd: string): void {
     const params = new HttpParams().set('username', username).set('password', pswd);
 
-    const httpRequest$ = this.http.get(this.API_URL, { params, observe: 'response' });
+    const httpRequestPromise = this.http.get(this.LOGIN_API_URL, {
+      params,
+      observe: 'response', // Para poder ver el header
+    });
 
-    lastValueFrom(httpRequest$)
+    lastValueFrom(httpRequestPromise)
       .then((httpResponse) => this.processLoginResponse(httpResponse, username))
       .catch((error) => this.processLoginError(error));
   }
 
   logout() {
-    // 1. Limpiamos datos
-    sessionStorage.removeItem(this.STORAGE_KEY);
-    sessionStorage.removeItem(this.EXPIRATION_KEY);
-
     this.isLoggedIn.set(false);
-    
+
+    if (sessionStorage.getItem(this.STORAGE_KEY) || sessionStorage.getItem(this.EXPIRATION_KEY)) {
+      sessionStorage.removeItem(this.STORAGE_KEY);
+      sessionStorage.removeItem(this.EXPIRATION_KEY);
+      alert('Sesión cerrada correctamente');
+    }
     // Limpia el cronómetro del token que se acaba de eliminar
     if (this.logoutTimerId) clearTimeout(this.logoutTimerId);
 
     this.router.navigate(['/home']);
-    alert('Sesión cerrada con éxito')
+  }
+
+  checkUniqueUsername(username: string): Promise<boolean> {
+    const clearUsername = encodeURIComponent(username); // Para emular lo que hace .set en HttpParams
+    const url = `${this.USERS_API_URL}/${clearUsername}`;
+    // Tampoco es que haga falta el 'response', puesto que no accedemos al estatus en el .then (en .catch siempre se puede)
+    const httpRequestPromise = this.http.get(url, { observe: 'response' });
+
+    return lastValueFrom(httpRequestPromise)
+      .then(() => {
+        return false;
+      }) // OK --> nombre encontrado y por tanto no disponible
+      .catch((error: HttpErrorResponse) => {
+        if (error.status === 404)
+          return true; // Not Found --> nombre disponible
+        else throw error; // 500, Internal Server Error --> lo lanzamos
+      });
+  }
+
+  register(userData: RegisterRequest): void {
+    const httpRequestPromise = this.http.post(this.USERS_API_URL, userData);
+
+    lastValueFrom(httpRequestPromise)
+      .then(() => alert(`Usuario creado correctamente.`))
+      .catch((error) => alert('Error en login: ' + error.message));
   }
 
   // ==========================================
@@ -64,7 +93,7 @@ export class AuthService {
     // Sesión completa; token recién cocinado
     this.startSession(this.SESSION_DURATION);
     this.router.navigate(['/home']);
-    alert(`Bienvenido, ${username}.`)
+    alert(`Bienvenido, ${username}.`);
   }
 
   private processLoginError(error: HttpErrorResponse): void {
@@ -98,7 +127,14 @@ export class AuthService {
     const now = Date.now();
     const timeLeft = expirationDate - now;
 
-    if (timeLeft > 0) this.startSession(timeLeft); // Sesión "reciclada"; token antiguo pero válido
+    if (timeLeft > 0)
+      this.startSession(timeLeft); // Sesión "reciclada"; token antiguo pero válido
     else this.logout(); // Sesión caducada; token caducado -> ejecutar logout
   }
+}
+
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
 }

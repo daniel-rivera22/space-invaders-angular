@@ -28,11 +28,7 @@ export class Preferences {
   });
 
   onSubmit() {
-    if (this.preferencesForm.invalid) {
-      alert('Formulario no válido. Revise los campos y vuelva a enviar.');
-      this.preferencesForm.markAllAsTouched();
-      return;
-    }
+    if (this.preferencesForm.invalid) this.preferencesForm.markAllAsTouched();
 
     const { time, numberOfUfos, doubleSpeed } = this.preferencesForm.getRawValue();
 

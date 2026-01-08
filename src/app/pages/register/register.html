@@ -4,17 +4,36 @@
   class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white"
 >
   <h3 class="text-warning">Register Form</h3>
+
   <div class="mb-3">
     <label for="username" class="form-label">Username:</label>
     <input
       type="text"
       id="username"
-      name="username"
       formControlName="username"
       class="form-control"
       placeholder="Username"
-      required
+      [class.is-invalid]="
+        registerForm.get('username')?.invalid && registerForm.get('username')?.touched
+      "
     />
+
+    @if (registerForm.get('username')?.invalid && registerForm.get('username')?.touched) {
+      <div class="invalid-feedback">
+        @if (registerForm.get('username')?.hasError('required')) {
+          <span>El nombre de usuario es obligatorio.</span>
+        }
+        @if (registerForm.get('username')?.hasError('maxlength')) {
+          <span>Máximo 8 caracteres.</span>
+        }
+        @if (registerForm.get('username')?.hasError('nonUniqueUsername')) {
+          <span>❌ Ese usuario ya existe.</span>
+        }
+      </div>
+    }
+    @if (registerForm.get('username')?.pending) {
+      <div class="text-info small mt-1">⏳ Comprobando disponibilidad...</div>
+    }
   </div>
 
   <div class="mb-3">
@@ -22,12 +41,21 @@
     <input
       type="email"
       id="email"
-      name="email"
       formControlName="email"
       class="form-control"
-      placeholder="aaaaa@aaa.aaa"
-      required
+      placeholder="Example@mail.com"
+      [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
     />
+    @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+      <div class="invalid-feedback">
+        @if (registerForm.get('email')?.hasError('required')) {
+          <span>El email es obligatorio.</span>
+        }
+        @if (registerForm.get('email')?.hasError('email')) {
+          <span>Formato de email incorrecto.</span>
+        }
+      </div>
+    }
   </div>
 
   <div class="mb-3">
@@ -35,12 +63,16 @@
     <input
       type="password"
       id="password"
-      name="password"
       formControlName="password"
       class="form-control"
       placeholder="Password"
-      required
+      [class.is-invalid]="
+        registerForm.get('password')?.invalid && registerForm.get('password')?.touched
+      "
     />
+    @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+      <div class="invalid-feedback">La contraseña es obligatoria.</div>
+    }
   </div>
 
   <div class="mb-3">
@@ -48,12 +80,25 @@
     <input
       type="password"
       id="confirm-password"
-      name="confirm-password"
       formControlName="confirmPassword"
       class="form-control"
       placeholder="Repeat your password"
-      required
+      [class.is-invalid]="
+        (registerForm.get('confirmPassword')?.invalid ||
+          registerForm.hasError('incorrectPasswordConfirmation')) &&
+        registerForm.get('confirmPassword')?.touched
+      "
     />
+
+    @if (registerForm.get('confirmPassword')?.touched) {
+      <div class="invalid-feedback">
+        @if (registerForm.get('confirmPassword')?.hasError('required')) {
+          <span>Repite la contraseña.</span>
+        } @else if (registerForm.hasError('incorrectPasswordConfirmation')) {
+          <span>Las contraseñas no coinciden.</span>
+        }
+      </div>
+    }
   </div>
 
   <button type="submit" class="btn btn-primary w-100">Sign in</button>

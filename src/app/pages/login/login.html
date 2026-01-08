@@ -4,6 +4,7 @@
   class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white"
 >
   <h3 class="text-warning">Login Form</h3>
+
   <div class="mb-3">
     <label for="username" class="form-label">User</label>
     <input
@@ -13,8 +14,19 @@
       formControlName="username"
       class="form-control"
       placeholder="User"
-      required
+      [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
     />
+    
+    @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+      <div class="invalid-feedback">
+        @if (loginForm.get('username')?.hasError('required')) {
+          <span>El usuario es obligatorio.</span>
+        }
+        @if (loginForm.get('username')?.hasError('maxlength')) {
+          <span>El usuario no puede tener más de 8 caracteres.</span>
+        }
+      </div>
+    }
   </div>
 
   <div class="mb-3">
@@ -26,8 +38,14 @@
       formControlName="password"
       class="form-control"
       placeholder="Password"
-      required
+      [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
     />
+    
+    @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+      <div class="invalid-feedback">
+        La contraseña es obligatoria.
+      </div>
+    }
   </div>
 
   <button type="submit" class="btn btn-primary w-100">Log in</button>

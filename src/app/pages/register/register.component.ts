@@ -16,7 +16,8 @@ export class Register {
   registerForm = new FormGroup(
     {
       username: createNonNullableFormControl('', {
-        validators: [Validators.max(MAX_USERNAME_LENGTH), this.uniqueUsernameValidator()],
+        validators: Validators.maxLength(MAX_USERNAME_LENGTH),
+        asyncValidators: this.uniqueUsernameValidator(),
       }),
       email: createNonNullableFormControl('', { validators: Validators.email }),
       password: createNonNullableFormControl(''),
@@ -26,12 +27,10 @@ export class Register {
   );
 
   onSubmit(): void {
-    if (this.registerForm.hasError('incorrectPasswordConfirmation'))
-      alert('Las contraseñas no coinciden.');
-    else if (this.registerForm.invalid) {
-      alert('Formulario no válido. Revise los campos y vuelva a enviar.');
-      this.registerForm.markAllAsTouched(); // TRUCO: Para que aparezcan todos los errores
-    } else {
+    // Por si acaso no hubiese [disabled] en el botón o se eliminase dicha propiedad editando el HTML
+    if (this.registerForm.invalid) this.registerForm.markAllAsTouched();
+    
+    else {
       // userData se convierte en el resto de getRawValue al quitarle confirmPassword, es decir, los argumentos del POST
       const { confirmPassword, ...userData } = this.registerForm.getRawValue();
       this.authService.register(userData);

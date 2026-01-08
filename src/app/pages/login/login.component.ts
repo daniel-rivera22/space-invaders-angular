@@ -10,21 +10,18 @@ import { createNonNullableFormControl } from '../../utils/formFactories';
   styleUrl: './login.css',
 })
 export class Login {
-  public readonly authServer = inject(AuthService);
+  public readonly authService = inject(AuthService);
 
   loginForm = new FormGroup({
-    username: createNonNullableFormControl('user1', {validators: Validators.max(MAX_USERNAME_LENGTH)}),
+    username: createNonNullableFormControl('user1', {validators: Validators.maxLength(MAX_USERNAME_LENGTH)}),
     password: createNonNullableFormControl('user1'),
   });
 
   onSubmit(){
-    if(this.loginForm.invalid){
-      alert("Formulario incorrecto. Faltan parámetros");
-      this.loginForm.markAllAsTouched();
-    }
+    if(this.loginForm.invalid) this.loginForm.markAllAsTouched();
     else{
       const { username, password } = this.loginForm.getRawValue();
-      this.authServer.login(username, password);
+      this.authService.login(username, password);
     }
   }
 }

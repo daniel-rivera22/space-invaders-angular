@@ -1,12 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface RecordRequest{
   punctuation: number;
   ufos: number;
   disposedTime: number;
+}
+
+export interface GameRecord {
+  username: string;
+  punctuation: number;
+  ufos: number;
+  disposedTime: number;
+  recordDate: number; // Viene en formato timestamp (milisegundos)
 }
 
 @Injectable({
@@ -25,12 +33,17 @@ export class UserService {
   postRecord(recordData: RecordRequest) {
     const token = this.authService.getToken();
     let headers = new HttpHeaders();
-    if(token) headers = headers.set('Authorization', token)
+    if (token) headers = headers.set('Authorization', token);
 
     const httpRequestPromise = this.http.post(this.RECORDS_API_URL, recordData, { headers });
 
     lastValueFrom(httpRequestPromise)
       .then(() => alert(`Estadísticas publicadas correctamente.`))
       .catch((error) => alert('Error al publicar estadísticas: ' + error.message));
+  }
+
+  getGeneralRecords(): Observable<GameRecord[]> {
+    // No requiere token (según la documentación habitual de esta práctica), es público.
+    return this.http.get<GameRecord[]>(this.RECORDS_API_URL);
   }
 }

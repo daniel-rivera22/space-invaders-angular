@@ -1,0 +1,23 @@
+:host {
+    /* Posicionamiento fijo para cubrir toda la ventana */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1050;
+    /* Por encima de todo (Bootstrap usa 1050 para modales) */
+
+    /* Flexbox para centrar la tarjeta vertical y horizontalmente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Fondo semitransparente oscuro ("backdrop") */
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    /* Efecto difuminado del fondo (muy moderno) */
+
+    /* Animación de entrada suave */
+    animation: fadeIn 0.3s ease-out;
+}

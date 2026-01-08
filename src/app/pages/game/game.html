@@ -11,10 +11,22 @@
   ></canvas>
 
   <div class="position-absolute top-0 end-0 p-3 text-white">
-    <h4 class="m-0 fw-bold font-monospace">Tiempo: {{ time }}</h4>
+    <h4 class="m-0 fw-bold font-monospace">Tiempo: {{ timeRemaining }}</h4>
   </div>
 
   <div class="position-absolute bottom-0 end-0 p-3 text-white">
     <h3 class="m-0 fw-bold font-monospace">Score: {{ score }}</h3>
   </div>
+
+@if (isGameOver) {
+  <app-game-over
+    [score]="gameService.finalScore"
+    [ufos]="gameService.gamePreferences.UFOS_TO_DEPLOY"
+    [disposedTime]="gameService.gamePreferences.DISPOSED_TIME"
+    (save)="onSaveAndExit()"
+    (exit)="onExit()"
+  >
+  </app-game-over>
+}
+  
 </div>

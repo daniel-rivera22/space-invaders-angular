@@ -21,7 +21,7 @@ export class Preferences {
       {validators: [Validators.min(1), Validators.max(9)]}
     ),
     time: createNonNullableFormControl(
-      DEFAULT_GAME_PREFERENCES.GAME_TIME,
+      DEFAULT_GAME_PREFERENCES.DISPOSED_TIME,
       {validators: [Validators.min(60), Validators.max(180)]}
     ),
     doubleSpeed: createNonNullableFormControl(DEFAULT_GAME_PREFERENCES.DOUBLE_SPEED),
@@ -37,7 +37,7 @@ export class Preferences {
       ...DEFAULT_GAME_PREFERENCES,
 
       // Después, se sobreescribe con los valores que SI haya introducido el usuario
-      GAME_TIME: Number(time),
+      DISPOSED_TIME: Number(time),
       UFOS_TO_DEPLOY: Number(numberOfUfos),
       DOUBLE_SPEED: Boolean(doubleSpeed),
     };

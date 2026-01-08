@@ -16,13 +16,13 @@ export interface Ufo extends Entity {
 export interface Bullet extends Entity {}
 
 export interface GamePreferences {
-  readonly GAME_TIME: number;
+  readonly DISPOSED_TIME: number;
   readonly UFOS_TO_DEPLOY: number;
   readonly DOUBLE_SPEED: boolean;
 }
 
 export const DEFAULT_GAME_PREFERENCES: GamePreferences = {
-  GAME_TIME: 60,
+  DISPOSED_TIME: 60,
   UFOS_TO_DEPLOY: 5,
   DOUBLE_SPEED: false,
 };

@@ -4,17 +4,29 @@ import { ElementRef, ViewChild } from '@angular/core';
 import { GAME_CONFIG } from '../../models/gameModels';
 import { GameService } from '../../services/game.service';
 import { Subscription } from 'rxjs';
+import { RecordRequest, UserService } from '../../services/user.service';
+import { Router } from '@angular/router';
+import { GameOver } from '../../components/game-over/game-over.component';
+import { AuthService } from '../../services/auth.service';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-game',
-  imports: [],
+  imports: [GameOver],
   templateUrl: './game.html',
   styleUrl: './game.css',
 })
 export class Game implements OnInit, AfterViewInit, OnDestroy {
   // ========== PROPIEDADES - Servicio inyectado ==========
-  private readonly gameService = inject(GameService);
+  public readonly gameService = inject(GameService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+
+  // ========== PROPIEDADES - Flags ==========
+  
+  public isGameOver = false;
 
   // ========== PROPIEDADES - Referencias DOM ==========
   /*
@@ -28,7 +40,7 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
   private ctx!: CanvasRenderingContext2D;
   private loopId = 0;
   private isGameRunning = true;
-  private gameOverSubscription!: Subscription;
+  private gameOverSubscription?: Subscription;
 
   // ========== PROPIEDADES - Assets ==========
   private assets: Record<string, HTMLImageElement> = {};
@@ -37,9 +49,9 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.loadAssets();
     this.gameOverSubscription = this.gameService.gameOver$.subscribe(() => {
-      this.cdr.detectChanges(); // Para que se printee sí o sí el time: 0
+      this.isGameOver = true;
       this.stopGameLoop();
-      //TODO: Mostrar puntuaciones
+      this.cdr.detectChanges(); // Para que se printee sí o sí el time: 0
     });
   }
 
@@ -68,7 +80,7 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
 
   // ========== GETTERS ==========
   // Propiedad de acceso -> parecen variables, se comportan como funciones
-  get time(): number {
+  get timeRemaining(): number {
     return this.gameService.getTimeRemaining();
   }
 
@@ -110,6 +122,21 @@ export class Game implements OnInit, AfterViewInit, OnDestroy {
       default:
         break;
     }
+  }
+
+  onSaveAndExit() {    
+    const recordData: RecordRequest = {
+      punctuation: this.gameService.getFinalScore(),
+      ufos: this.gameService.getUfosToDeploy(),
+      disposedTime: this.gameService.getDisposedTime(),
+    }
+
+    this.userService.postRecord(recordData);
+    this.onExit();
+  }
+
+  onExit(){
+    this.router.navigate(['/home']);
   }
 
   // OnKeyPress está en desuso

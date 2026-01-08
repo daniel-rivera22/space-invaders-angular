@@ -1,0 +1,13 @@
+:host {
+    display: block;
+
+    /* 2. Ancho: Ocupa el 100% en móviles, pero se planta en 500px en escritorio */
+    width: 100%;
+    max-width: 500px;
+
+    /* 3. Centrado Horizontal: auto a los lados */
+    margin: 2rem auto auto auto;
+
+    /* 5. (Opcional) Un poco de aire en pantallas muy pequeñas */
+    padding: 0 1rem;
+}

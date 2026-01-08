@@ -88,6 +88,10 @@ export class AuthService {
       .catch((error) => alert('Error en login: ' + error.message));
   }
 
+  getToken(){
+    return sessionStorage.getItem(this.STORAGE_KEY);
+  }
+
   // ==========================================
   // MÉTODOS PRIVADOS (Procesamiento y Tiempo)
   // ==========================================

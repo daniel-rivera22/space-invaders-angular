@@ -19,6 +19,12 @@ export class GameService {
   public height: number = 0;
   public gameOver$ = new Subject<void>();
 
+  // ========== PROPIEDADES PÚBLICAS - Estado del juego (a representar en gameOver) ==========
+
+  public gamePreferences: GamePreferences;
+  public finalScore: number = 0;
+  public defeatedUfos: number = 0;
+
   // ========== PROPIEDADES PRIVADAS - Entidades del juego ==========
   /*
     Usar ! le dice a TS que se "fíe" de que se va a inicializar la variable desde fuera
@@ -29,10 +35,8 @@ export class GameService {
   private bullet: Bullet | null = null; // No existe Optional<> porque TS lo maneja así
 
   // ========== PROPIEDADES PRIVADAS - Estado del juego ==========
-  private gamePreferences: GamePreferences;
 
-  private score = 0;
-  private defeatedUfos: number = 0;
+  private score: number = 0;
 
   // No vamos a inicializarlo hasta que sepamos si se han personalizado las preferences: '!'
   private timeRemaining!: number;
@@ -75,6 +79,18 @@ export class GameService {
 
   getScore() {
     return this.score;
+  }
+
+  getFinalScore(){
+    return this.finalScore;
+  }
+
+  getUfosToDeploy(){
+    return this.gamePreferences.UFOS_TO_DEPLOY;
+  }
+
+  getDisposedTime(){
+    return this.gamePreferences.DISPOSED_TIME;
   }
 
   // ========== MÉTODOS PÚBLICOS - Control ==========
@@ -121,6 +137,7 @@ export class GameService {
     this.initializeShip();
     this.initializeUfos();
     this.initializeTimer();
+    this.initializeScoring();
   }
 
   private initializeShip(): void {
@@ -166,7 +183,7 @@ export class GameService {
   }
 
   initializeTimer() {
-    this.timeRemaining = this.gamePreferences.GAME_TIME;
+    this.timeRemaining = this.gamePreferences.DISPOSED_TIME;
     if (this.timeIntervalId) clearInterval(this.timeIntervalId);
 
     this.timeIntervalId = setInterval(() => {
@@ -176,6 +193,11 @@ export class GameService {
         this.endGame();
       }
     }, 1000);
+  }
+
+  initializeScoring() {
+    this.defeatedUfos = 0;
+    this.score = 0;
   }
 
   // ========== MÉTODOS PRIVADOS - Actualización de entidades ==========
@@ -231,9 +253,8 @@ export class GameService {
     const defeatedUfo = this.ufos.find(
       (ufo) => ufo.hit === false && this.isColliding(activeBullet, ufo),
     );
-    
-    if (defeatedUfo) this.execDefeatedUfoRoutine(defeatedUfo);
 
+    if (defeatedUfo) this.execDefeatedUfoRoutine(defeatedUfo);
     // Si no, actualizar sus coordenadas (poner esta línea al final deja que se pinte por completo el desvanecimiento)
     else this.bullet.y -= this.bullet.speed;
   }
@@ -267,11 +288,10 @@ export class GameService {
   }
 
   private endGame() {
-    const finalScore =
-      this.score / (this.gamePreferences.GAME_TIME / 60) -
+    this.finalScore =
+      this.score / (this.gamePreferences.DISPOSED_TIME / 60) -
       50 * (this.gamePreferences.UFOS_TO_DEPLOY - 1) +
       250 * Number(this.gamePreferences.DOUBLE_SPEED);
-    // TODO: Mostrar puntuación al final de la partida
     this.gameOver$.next();
   }
 

@@ -1,0 +1,42 @@
+<div class="card bg-dark text-white border-secondary shadow-lg p-4" style="max-width: 400px; width: 90%;">
+  
+  <h2 class="text-center text-uppercase text-warning mb-4 fw-bold">Game Over</h2>
+
+  <div class="text-center mb-4">
+    <span class="display-1 fw-bold text-info">{{ score }}</span>
+    <p class="text-uppercase small text-white">Final score</p>
+  </div>
+
+  <div class="row text-center mb-4 border-top border-bottom border-secondary py-3">
+    <div class="col border-end border-secondary">
+      <h4 class="mb-0 fw-bold">{{ ufos }}</h4>
+      <small class="text-white">UFOs</small>
+    </div>
+    <div class="col">
+      <h4 class="mb-0 fw-bold">{{ disposedTime }}s</h4>
+      <small class="text-white">Total Time</small>
+    </div>
+  </div>
+
+  <div class="d-grid gap-2">
+    
+    @if (authService.isLoggedIn()) {
+      <button (click)="save.emit()" class="btn btn-success btn-lg">
+        Guardar y Salir
+      </button>
+      <button (click)="exit.emit()" class="btn btn-outline-light">
+        Descartar y Salir
+      </button>
+    } 
+    
+    @else {
+      <div class="alert alert-secondary text-center text-white py-2 small mb-2">
+        <i class="bi bi-info-circle"></i> Inicia sesión para guardar tu récord.
+      </div>
+      <button (click)="exit.emit()" class="btn text-white btn-primary btn-lg">
+        Volver al Inicio
+      </button>
+    }
+  </div>
+
+</div>

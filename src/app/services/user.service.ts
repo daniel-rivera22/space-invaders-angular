@@ -25,6 +25,7 @@ export class UserService {
   private readonly authService = inject(AuthService);
 
   private readonly RECORDS_API_URL = 'http://wd.etsisi.upm.es:10000/records';
+  private readonly LOCAL_API_URL = 'http://wd.etsisi.upm.es:10000/records';
 
   /* Se puede hacer de dos formas:
      - Recuperar el token manualmente (para salir del paso) ((Lo que voy a hacer))
@@ -45,5 +46,10 @@ export class UserService {
   getGeneralRecords(): Observable<GameRecord[]> {
     // No requiere token (según la documentación habitual de esta práctica), es público.
     return this.http.get<GameRecord[]>(this.RECORDS_API_URL);
+  }
+
+  getPersonalRecords(username: string): Observable<GameRecord[]> {
+    const url = `${this.LOCAL_API_URL}/${username}`;
+    return this.http.get<GameRecord[]>(url);
   }
 }

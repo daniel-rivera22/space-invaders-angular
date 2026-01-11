@@ -15,9 +15,7 @@ export const MAX_USERNAME_LENGTH = 8;
 @Injectable({
   providedIn: 'root',
 })
-
 export class AuthService {
-
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
@@ -88,7 +86,7 @@ export class AuthService {
       .catch((error) => alert('Error en login: ' + error.message));
   }
 
-  getToken(){
+  getToken() {
     return sessionStorage.getItem(this.STORAGE_KEY);
   }
 
@@ -145,5 +143,30 @@ export class AuthService {
     if (timeLeft > 0)
       this.startSession(timeLeft); // Sesión "reciclada"; token antiguo pero válido
     else this.logout(); // Sesión caducada; token caducado -> ejecutar logout
+  }
+
+  public getCurrentUser(): string | null {
+    const token = this.getToken();
+
+    if (!token) return null;
+
+    try {
+      // el JWT tiene 3 partes separadas por '.'. La segunda parte ([1]) son los datos, donde está encriptado el nombre del usuario.
+      const payloadPart = token.split('.')[1];
+
+      // 2. Decodificar Base64 a String (atob es nativo del navegador)
+      const decodedString = atob(payloadPart);
+
+      // 3. Convertir String JSON a Objeto JavaScript
+      const payloadObj = JSON.parse(decodedString);
+
+      // 4. Devolver el campo donde esté el nombre
+      // A veces se llama 'username', 'user', 'sub' o 'name'.
+      // Probamos los más comunes por seguridad.
+      return payloadObj.username || payloadObj.user || payloadObj.sub || null;
+    } catch (error) {
+      console.error('Error al decodificar el token:', error);
+      return null;
+    }
   }
 }

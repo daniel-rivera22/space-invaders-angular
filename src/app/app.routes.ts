@@ -7,6 +7,7 @@ import { Records } from './pages/records/records.component';
 
 import { Register } from './pages/register/register.component';
 import { Login } from './pages/login/login.component';
+import { Profile } from './pages/profile/profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'records', component: Records },
   { path: 'register', component: Register },
   { path: 'login', component: Login },
+  { path: 'profile', component: Profile },
 
   // Comodín: siempre al final (Angular lee por orden, como en CSS)
   { path: '**', redirectTo: '/home' },

@@ -83,7 +83,7 @@ export class AuthService {
 
     lastValueFrom(httpRequestPromise)
       .then(() => alert(`Usuario creado correctamente.`))
-      .catch((error) => alert('Error en login: ' + error.message));
+      .catch((error) => alert('Error en register: ' + error.message));
   }
 
   getToken() {

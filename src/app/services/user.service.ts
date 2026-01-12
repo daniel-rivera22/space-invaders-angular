@@ -17,6 +17,11 @@ export interface GameRecord {
   recordDate: number; // Viene en formato timestamp (milisegundos)
 }
 
+export interface ChangePasswordRequest {
+  username: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,7 +30,10 @@ export class UserService {
   private readonly authService = inject(AuthService);
 
   private readonly RECORDS_API_URL = 'http://wd.etsisi.upm.es:10000/records';
-  private readonly LOCAL_API_URL = 'http://localhost:3000/personal-records';
+  private readonly LOCAL_RECORDS_API_URL = 'http://localhost:3000/personal-records';
+
+  private readonly PROFILE_API_URL = 'http://wd.etsisi.upm.es:10000/users';
+  private readonly LOCAL_PROFILE_API_URL = 'http://localhost:3000/profile';
 
   /* Se puede hacer de dos formas:
      - Recuperar el token manualmente (para salir del paso) ((Lo que voy a hacer))
@@ -49,7 +57,20 @@ export class UserService {
   }
 
   getPersonalRecords(username: string): Observable<GameRecord[]> {
-    const url = `${this.LOCAL_API_URL}/${username}`;
+    const url = `${this.LOCAL_RECORDS_API_URL}/${username}`;
     return this.http.get<GameRecord[]>(url);
+  }
+
+  changePassword(data: ChangePasswordRequest) {
+    const token = this.authService.getToken();
+    let headers = new HttpHeaders();
+    if (token) headers = headers.set('Authorization', token);
+
+    const url = `${this.LOCAL_PROFILE_API_URL}/${data.username}`;
+    const httpRequestPromise = this.http.patch(url, data, { headers });
+
+    lastValueFrom(httpRequestPromise)
+      .then(() => alert(`Contraseña cambiada correctamente.`))
+      .catch((error) => alert('Error al cambiar contraseña: ' + error.message));
   }
 }

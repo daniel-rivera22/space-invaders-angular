@@ -48,16 +48,16 @@ export class Records implements OnInit {
 
   private loadUserRecords(){
     const username = this.authService.getCurrentUser();
-    if(username){
-      this.userService.getPersonalRecords(username).subscribe({
-        next: (data) => {
-          this.userRecords = data;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          alert(`Error code: ${err.status}`)
-        },
-      });
-    }
+    if(!username) return;
+
+    this.userService.getPersonalRecords(username).subscribe({
+      next: (data) => {
+        this.userRecords = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        alert(`Error code: ${err.status}`)
+      },
+    });
   }
 }

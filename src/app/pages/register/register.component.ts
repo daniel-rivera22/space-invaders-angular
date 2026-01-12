@@ -59,7 +59,7 @@ export class Register {
   }
 }
 
-function isSamePassword(registerForm: AbstractControl): ValidationErrors | null {
+export function isSamePassword(registerForm: AbstractControl): ValidationErrors | null {
   const { password, confirmPassword } = registerForm.getRawValue();
 
   if (password === confirmPassword) return null;

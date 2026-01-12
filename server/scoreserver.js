@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./database'); // Importamos el pool de conexiones
+const db = require('./scoredatabase'); // Importamos el pool de conexiones
 
 const app = express();
 const PORT = 3000;

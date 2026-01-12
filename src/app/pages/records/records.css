@@ -1,8 +1,7 @@
 :host {
     display: block;
     width: 100%;
-    max-width: 900px;
     /* Un poco más ancho que el login para que quepa la tabla */
-    margin: 2rem auto;
-    padding: 0 1rem;
+    margin: auto auto;
+    padding: 0;
 }

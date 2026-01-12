@@ -1,0 +1,52 @@
+<form
+  [formGroup]="profileForm"
+  (ngSubmit)="onSubmit()"
+  class="border rounded p-4 bg-light d-flex flex-column gap-3 bg-dark text-white"
+>
+  <h3 class="text-warning">Profile Form</h3>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input
+      type="password"
+      id="password"
+      formControlName="password"
+      class="form-control"
+      placeholder="Password"
+      [class.is-invalid]="
+        profileForm.get('password')?.invalid && profileForm.get('password')?.touched
+      "
+    />
+    @if (profileForm.get('password')?.invalid && profileForm.get('password')?.touched) {
+      <div class="invalid-feedback">La contraseña es obligatoria.</div>
+    }
+  </div>
+
+  <div class="mb-3">
+    <label for="confirm-password" class="form-label">Repeat password</label>
+    <input
+      type="password"
+      id="confirm-password"
+      formControlName="confirmPassword"
+      class="form-control"
+      placeholder="Repeat your password"
+      [class.is-invalid]="
+        (profileForm.get('confirmPassword')?.invalid ||
+          profileForm.hasError('incorrectPasswordConfirmation')) &&
+        profileForm.get('confirmPassword')?.touched
+      "
+    />
+
+    @if (profileForm.get('confirmPassword')?.touched) {
+      <div class="invalid-feedback">
+        @if (profileForm.get('confirmPassword')?.hasError('required')) {
+          <span>Repite la contraseña.</span>
+        } @else if (profileForm.hasError('incorrectPasswordConfirmation')) {
+          <span>Las contraseñas no coinciden.</span>
+        }
+      </div>
+    }
+  </div>
+
+  <button type="submit" class="btn btn-primary w-100">Change Password</button>
+</form>
